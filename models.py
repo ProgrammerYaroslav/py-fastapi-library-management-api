@@ -12,7 +12,6 @@ class Author(Base):
     # Relationship to Book
     books = relationship("Book", back_populates="author")
 
-
 class Book(Base):
     __tablename__ = "books"
 

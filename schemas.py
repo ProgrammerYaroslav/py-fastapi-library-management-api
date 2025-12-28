@@ -9,6 +9,9 @@ class BookBase(BaseModel):
     publication_date: date
 
 class BookCreate(BookBase):
+    # We pass author_id explicitly when creating a book via a general endpoint,
+    # or handle it in the backend if using a nested route. 
+    # Here we will allow passing it in the body for flexibility.
     pass
 
 class Book(BookBase):
@@ -28,7 +31,7 @@ class AuthorCreate(AuthorBase):
 
 class Author(AuthorBase):
     id: int
-    books: List[Book] = []
+    books: List[Book] = [] # Nested list of books
 
     class Config:
         from_attributes = True
