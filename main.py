@@ -1,14 +1,14 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 
-import models, schemas, crud
+import crud, models, schemas
 from database import SessionLocal, engine
 
 # Create the database tables
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Library Management API")
+app = FastAPI()
 
 # Dependency to get the database session
 def get_db():
@@ -45,23 +45,19 @@ def read_author(author_id: int, db: Session = Depends(get_db)):
 def create_book_for_author(
     author_id: int, book: schemas.BookCreate, db: Session = Depends(get_db)
 ):
-    # Ensure author exists before adding a book
+    # Check if author exists first
     db_author = crud.get_author(db, author_id=author_id)
     if db_author is None:
         raise HTTPException(status_code=404, detail="Author not found")
-    
+        
     return crud.create_author_book(db=db, book=book, author_id=author_id)
 
 @app.get("/books/", response_model=List[schemas.Book])
 def read_books(
     skip: int = 0, 
     limit: int = 10, 
-    author_id: int = None, 
+    author_id: Optional[int] = Query(None, description="Filter books by author ID"),
     db: Session = Depends(get_db)
 ):
-    """
-    Retrieve books. Can filter by author_id using a query parameter.
-    Example: /books/?author_id=1
-    """
     books = crud.get_books(db, skip=skip, limit=limit, author_id=author_id)
     return books

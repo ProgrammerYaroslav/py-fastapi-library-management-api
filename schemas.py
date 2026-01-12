@@ -9,9 +9,6 @@ class BookBase(BaseModel):
     publication_date: date
 
 class BookCreate(BookBase):
-    # We pass author_id explicitly when creating a book via a general endpoint,
-    # or handle it in the backend if using a nested route. 
-    # Here we will allow passing it in the body for flexibility.
     pass
 
 class Book(BookBase):
@@ -19,7 +16,7 @@ class Book(BookBase):
     author_id: int
 
     class Config:
-        from_attributes = True
+        from_attributes = True  # Allows Pydantic to read data from ORM objects
 
 # --- Author Schemas ---
 class AuthorBase(BaseModel):
@@ -31,7 +28,7 @@ class AuthorCreate(AuthorBase):
 
 class Author(AuthorBase):
     id: int
-    books: List[Book] = [] # Nested list of books
+    books: List[Book] = []  # Nested list of books
 
     class Config:
         from_attributes = True
